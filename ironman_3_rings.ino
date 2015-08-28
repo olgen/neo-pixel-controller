@@ -23,6 +23,7 @@ uint8_t innerFrom = 40,
         outerTo = 23;
 
 int program = 0;
+int programs = 5;
 
 void setup() {
 
@@ -34,7 +35,7 @@ void setup() {
   pixels.setBrightness(25); // 1/3 brightness
   //pixels.setBrightness(240); // 1/3 brightness
   randomSeed(analogRead(0));
-  program = random(3);
+  program = random(programs);
 }
 
 uint32_t onColor = pixels.Color(250, 120, 60);
@@ -43,12 +44,19 @@ uint32_t black = pixels.Color(0, 0, 0);
 int frame = 5; //ms
 int pulse = 1000; //ms
 
+uint32_t loops = 0;
+int maxLoops = 100;
+
 void loop() {
   //randomDot();
   //randMatrix();
   //heartBeat();
   // rotatingRings();
-  return clock();
+  // return clock();
+  loops ++;
+  if((loops % maxLoops) == 0){
+    program = (program + 1) % programs;
+  }
 
   switch ( program ) {
     case 0:
@@ -59,6 +67,12 @@ void loop() {
       break;
     case 2:
       heartBeat();
+      break;
+    case 3:
+      rotatingRings();
+      break;
+    case 4:
+      clock();
       break;
   }
 }
