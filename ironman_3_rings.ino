@@ -7,7 +7,7 @@
 #endif
 
 #define PIN 0
-
+#define SWITCH 2
 #define PIX 47
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIX, PIN);
@@ -32,17 +32,22 @@ void setup() {
 #endif
 
   pixels.begin();
-  pixels.setBrightness(25); // 1/3 brightness
+  pixels.setBrightness(50); // 1/3 brightness
   //pixels.setBrightness(240); // 1/3 brightness
   randomSeed(analogRead(0));
-  program = random(programs);
+  //program = random(programs);
+  
+  // initialize the SWITCH pin as an input.
+  pinMode(SWITCH, INPUT);
+  // ...with a pullup
+  digitalWrite(SWITCH, HIGH);  
 }
 
 uint32_t onColor = pixels.Color(250, 120, 60);
 uint32_t black = pixels.Color(0, 0, 0);
 
 int frame = 5; //ms
-int pulse = 1000; //ms
+
 
 uint32_t loops = 0;
 int maxLoops = 100;
@@ -50,14 +55,15 @@ int maxLoops = 100;
 void loop() {
   //randomDot();
   //randMatrix();
-  //heartBeat();
+   return heartBeat();
   // rotatingRings();
   // return clock();
-  loops ++;
-  if((loops % maxLoops) == 0){
+  
+  if (!digitalRead(SWITCH)) {
     program = (program + 1) % programs;
   }
-
+  
+  
   switch ( program ) {
     case 0:
       randomDot();
@@ -96,8 +102,6 @@ void clock() {
   delay(100);
 }
 
-
-
 void rotatingRings() {
   rotateOuter();
   rotateMiddle();
@@ -125,7 +129,6 @@ void rotateInner() {
   setRingColor((innerFrom + 1), innerTotal, rotInner, lenInner, onColor);
   rotInner = (rotInner + 1) % innerTotal;
 }
-
 
 void setRingColor(int ringStart, int ringTotal, int stripeStart, int stripeLength, uint32_t color) {
   uint8_t  i;
@@ -161,16 +164,17 @@ uint32_t randomColor() {
   return pixels.Color(random(255), random(255), random(255));
 }
 
+int pulse = 1100; //ms
+
 void heartBeat() {
-  frame = 50;
+  frame = 35;
   beat(frame);
-  delay(frame * 4);
+  delay(2 * frame);
   beat(frame);
   delay(pulse - frame * 16);
 }
 
 void beat(int frame) {
-
   setColor(innerFrom, innerTo, onColor);
   delay(frame);
   setColor(middleFrom, middleTo, onColor);
@@ -183,7 +187,6 @@ void beat(int frame) {
   setColor(middleFrom, middleTo, black);
   delay(frame);
   setColor(innerFrom, innerTo, black);
-
 }
 
 void allBlack() {
